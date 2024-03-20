@@ -18,20 +18,19 @@ module Ollamachat
     def communicate_with_ollama(input_text)
       add_to_chat_history({ role: "user", content: input_text })
 
-      response_text = ""
       self.chat_text += "\n🎙️  #{input_text}\n\n🦙  "
 
-      retrieve_ollama_response(response_text)
+      retrieve_ollama_response
 
       self.chat_text += "\n\n"
     end
 
     private
 
-    def retrieve_ollama_response(response_text)
+    def retrieve_ollama_response
+      response_text = ""
       result = @ollama_client.chat(
-        { model: "llama2",
-          messages: @chat_history },
+        { model: "llama2", messages: @chat_history },
         server_sent_events: true
       ) do |event, _raw|
         response_text << (message_content = event.dig("message", "content").to_s)
@@ -79,8 +78,7 @@ module Ollamachat
         end
         horizontal_box do
           stretchy false
-          label
-          user_input = entry { label "🎙️" }
+          user_input = entry
           button("Send") do
             stretchy false
             on_clicked do
